@@ -7,11 +7,8 @@
       "use": "@vercel/node"
     },
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "src": "dist/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -21,14 +18,9 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/dist/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production",
-    "CLIENT_URL": "https://cryptoquant.vercel.app",
-    "JWT_SECRET": "cryptoquant-secure-jwt-secret-key-2025-min-32-chars"
-  },
   "functions": {
     "api/app-minimal.js": {
       "maxDuration": 30
