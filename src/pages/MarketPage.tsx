@@ -91,6 +91,7 @@ export default function MarketPage() {
   });
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [collectorStatus, setCollectorStatus] = useState<any>(null);
+  const [currencyUpdateInfo, setCurrencyUpdateInfo] = useState<any>(null);
 
   // 获取交易对数据
   const fetchTradingPairs = async (page: number = 1, showLoading = true) => {
@@ -135,11 +136,31 @@ export default function MarketPage() {
     }
   };
 
+  // 获取币种更新信息
+  const fetchCurrencyUpdateInfo = async () => {
+    try {
+      const response = await fetch('/api/currency-info/currency-update-info');
+      const result = await response.json();
+      
+      if (result.success) {
+        setCurrencyUpdateInfo({
+          totalPairs: result.data.totalPairs,
+          baseCurrencies: result.data.baseCurrencies,
+          quoteCurrencies: result.data.quoteCurrencies,
+          lastUpdate: result.data.lastUpdate
+        });
+      }
+    } catch (error) {
+      console.error('获取币种更新信息失败:', error);
+    }
+  };
+
   // 手动刷新数据
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchTradingPairs(pagination.page, false);
     await fetchCollectorStatus();
+    await fetchCurrencyUpdateInfo();
     setRefreshing(false);
     toast.success('数据已刷新');
   };
@@ -205,11 +226,13 @@ export default function MarketPage() {
   useEffect(() => {
     fetchTradingPairs(1);
     fetchCollectorStatus();
+    fetchCurrencyUpdateInfo();
     
     // 每30秒自动刷新
     const interval = setInterval(() => {
       fetchTradingPairs(pagination.page, false);
       fetchCollectorStatus();
+      fetchCurrencyUpdateInfo();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -273,6 +296,28 @@ export default function MarketPage() {
               <span className="text-gray-600">
                 数据状态: {collectorStatus.health.status === 'healthy' ? '正常' : '异常'}
               </span>
+            </div>
+          )}
+          
+          {/* 币种更新信息 */}
+          {currencyUpdateInfo && (
+            <div className="flex items-center space-x-2 text-sm bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+              <div className="text-blue-700">
+                <span className="font-medium">📊 币种更新:</span>
+                <span className="ml-2">{currencyUpdateInfo.totalPairs} 交易对</span>
+                <span className="mx-1">•</span>
+                <span>{currencyUpdateInfo.baseCurrencies} 基础币种</span>
+                <span className="mx-1">•</span>
+                <span>{currencyUpdateInfo.quoteCurrencies} 计价币种</span>
+                {currencyUpdateInfo.lastUpdate && (
+                  <>
+                    <span className="mx-2">|</span>
+                    <span className="text-blue-600 text-xs">
+                      更新: {new Date(parseInt(currencyUpdateInfo.lastUpdate)).toLocaleString()}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           )}
           

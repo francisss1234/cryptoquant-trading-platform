@@ -19,6 +19,7 @@ import strategyRoutes from './routes/strategies.js'
 import tradingRoutes from './routes/trading.js'
 import riskRoutes from './routes/riskManagement.js'
 import visualizationRoutes from './routes/visualization.js'
+import currencyInfoRoutes from './routes/currencyInfo.js'
 
 // for esm mode
 const __filename = fileURLToPath(import.meta.url)
@@ -44,6 +45,7 @@ app.use('/api', strategyRoutes)
 app.use('/api', tradingRoutes)
 app.use('/api/risk', riskRoutes)
 app.use('/api/visualization', visualizationRoutes)
+app.use('/api/currency-info', currencyInfoRoutes)
 
 /**
  * health
