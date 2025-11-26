@@ -13,6 +13,7 @@ import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import marketRoutes from './routes/market.js'
+import tradingPairsRoutes from './routes/tradingPairs.js'
 import indicatorRoutes from './routes/indicators.js'
 import strategyRoutes from './routes/strategies.js'
 import tradingRoutes from './routes/trading.js'
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
  */
 app.use('/api/auth', authRoutes)
 app.use('/api/market', marketRoutes)
+app.use('/api/trading-pairs', tradingPairsRoutes)
 app.use('/api/indicators', indicatorRoutes)
 app.use('/api', strategyRoutes)
 app.use('/api', tradingRoutes)

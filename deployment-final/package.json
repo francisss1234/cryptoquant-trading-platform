@@ -10,13 +10,7 @@
     "preview": "vite preview",
     "check": "tsc --noEmit",
     "server:dev": "nodemon",
-    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\"",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
-    "test:unit": "vitest run --reporter=verbose",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "test:all": "npm run test:unit && npm run test:e2e"
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -73,14 +67,6 @@
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
     "vite-plugin-trae-solo-badge": "^1.0.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "@vitest/ui": "^1.6.0",
-    "@testing-library/react": "^14.2.1",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/user-event": "^14.5.2",
-    "vitest": "^1.6.0",
-    "jsdom": "^24.0.0",
-    "supertest": "^6.3.4",
-    "@types/supertest": "^6.0.2"
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
+import MarketPage from "@/pages/MarketPage";
 import { MarketDataDashboard } from "@/components/MarketDataDashboard";
 import { StrategyManager } from "@/components/StrategyManager";
 import { TradingDashboard } from "@/components/TradingDashboard";

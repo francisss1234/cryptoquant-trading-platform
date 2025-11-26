@@ -1,72 +1,83 @@
 #!/bin/bash
 
-# 🚀 CryptoQuant 最终部署脚本
-# 创建完整的部署包并启动部署流程
+# CryptoQuant Trading Platform - Final Deployment Script
+# This script handles the complete deployment process
 
-echo "🎯 CryptoQuant 最终部署启动！"
-echo "================================"
+echo "🚀 CryptoQuant Trading Platform - Final Deployment"
+echo "================================================="
+echo
 
-# 创建部署包目录
-echo "📦 创建部署包..."
-mkdir -p deployment-package
-cp -r dist deployment-package/
-cp -r api deployment-package/
-cp vercel.json deployment-package/
-cp package.json deployment-package/
-cp .env.production.template deployment-package/.env
-cp ENVIRONMENT_SETUP.md deployment-package/
+# Step 1: Build the application
+echo "📦 Step 1: Building the application..."
+npm run build
 
-# 创建部署说明
-cat > deployment-package/DEPLOYMENT_INSTRUCTIONS.md << 'EOF'
-# 🚀 CryptoQuant 部署说明
+if [ $? -ne 0 ]; then
+    echo "❌ Build failed. Please check the errors above."
+    exit 1
+fi
 
-## 📦 部署包内容
-- ✅ dist/ - 前端构建文件
-- ✅ api/ - 后端API服务
-- ✅ vercel.json - Vercel配置文件
-- ✅ package.json - 依赖配置
-- ✅ .env - 环境变量模板
+echo "✅ Build completed successfully!"
+echo
 
-## 🚀 部署步骤
+# Step 2: Create deployment package
+echo "📁 Step 2: Creating deployment package..."
+mkdir -p deployment-final
+cp -r dist deployment-final/
+cp vercel-simple.json deployment-final/vercel.json
+cp package.json deployment-final/
+cp -r public deployment-final/ 2>/dev/null || true
 
-### 1. 访问 Vercel 网站
-打开 https://vercel.com
+echo "✅ Deployment package created!"
+echo
 
-### 2. 创建新项目
-- 点击 "New Project"
-- 选择 "Upload" 选项
+# Step 3: Provide deployment instructions
+echo "🌐 Step 3: Deploy to Vercel"
+echo "Choose one of the following methods:"
+echo
+echo "Method 1 - Vercel Website (Recommended):"
+echo "  1. Visit: https://vercel.com/new"
+echo "  2. Drag and drop the 'deployment-final' folder"
+echo "  3. Follow the prompts to complete deployment"
+echo
+echo "Method 2 - Vercel CLI:"
+echo "  1. Install Vercel CLI: npm install -g vercel"
+echo "  2. Login: vercel login"
+echo "  3. Deploy: cd deployment-final && vercel --prod"
+echo
+echo "Method 3 - GitHub Integration:"
+echo "  1. Push code to GitHub"
+echo "  2. Connect repository to Vercel"
+echo "  3. Automatic deployment on push"
+echo
 
-### 3. 上传部署包
-- 选择整个 deployment-package 文件夹
-- 点击 "Deploy"
+# Step 4: Create GitHub repository instructions
+echo "📤 Step 4: Push to GitHub (Optional)"
+echo "If you want to use GitHub integration:"
+echo "  1. Create repository on GitHub: https://github.com/new"
+echo "  2. Name it: cryptoquant-trading-platform"
+echo "  3. Run these commands:"
+echo "     git remote add origin https://github.com/YOUR_USERNAME/cryptoquant-trading-platform.git"
+echo "     git push -u origin master"
+echo
 
-### 4. 配置环境变量
-部署完成后，在 Vercel 项目设置中添加：
-```
-NODE_ENV=production
-CLIENT_URL=https://your-project-name.vercel.app
-JWT_SECRET=your-very-strong-jwt-secret-key-min-32-characters
-```
+# Step 5: Local testing
+echo "🧪 Step 5: Local Testing"
+echo "To test locally before deployment:"
+echo "  npm install -g serve"
+echo "  serve deployment-final/dist -p 3000"
+echo "  Open: http://localhost:3000"
+echo
 
-### 5. 验证部署
-访问 https://your-project-name.vercel.app 验证部署成功！
-
-## 🎉 恭喜！
-您的 CryptoQuant 量化交易平台即将上线！
-EOF
-
-echo "✅ 部署包创建完成！"
-echo ""
-echo "📁 部署包内容："
-ls -la deployment-package/
-echo ""
-echo "🚀 下一步："
-echo "1. 访问 https://vercel.com"
-echo "2. 创建新项目并选择 'Upload'"
-echo "3. 上传 deployment-package 文件夹"
-echo "4. 配置环境变量并开始部署"
-echo ""
-echo "🎯 预计部署时间：3-5分钟"
-echo "📈 成功率：95%+"
-echo ""
-echo "🚀 开始您的部署之旅吧！💰📈"
+echo "🎉 Deployment preparation complete!"
+echo "Your application is ready for deployment."
+echo
+echo "📋 Summary:"
+echo "  - Build: ✅ Complete"
+echo "  - Package: ✅ Ready"
+echo "  - Deployment: Ready to proceed"
+echo
+echo "Next steps:"
+echo "  1. Choose your deployment method above"
+echo "  2. Follow the instructions"
+echo "  3. Enjoy your live CryptoQuant platform!"
+echo
