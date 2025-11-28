@@ -26,21 +26,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
 interface TradingPair {
-  id: number;
   symbol: string;
-  base_asset: string;
-  quote_asset: string;
-  exchange: string;
-  price: number;
-  volume_24h: number;
-  high_24h: number;
-  low_24h: number;
-  change_24h: number;
-  change_percent_24h: number;
-  bid_price?: number;
-  ask_price?: number;
+  baseCurrency: string;
+  quoteCurrency: string;
   status: string;
-  last_updated: string;
+  minNotional: number;
+  lastUpdated: number;
 }
 
 interface PaginationInfo {
@@ -65,11 +56,9 @@ const EXCHANGES = [
 ];
 
 const SORT_OPTIONS = [
-  { value: 'volume_24h', label: '交易量' },
-  { value: 'price', label: '价格' },
-  { value: 'change_percent_24h', label: '涨跌幅' },
   { value: 'symbol', label: '交易对' },
-  { value: 'last_updated', label: '更新时间' }
+  { value: 'baseCurrency', label: '基础货币' },
+  { value: 'quoteCurrency', label: '报价货币' }
 ];
 
 export default function MarketPage() {
@@ -86,7 +75,7 @@ export default function MarketPage() {
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     exchange: searchParams.get('exchange') || '',
-    sortBy: searchParams.get('sortBy') || 'volume_24h',
+    sortBy: searchParams.get('sortBy') || 'symbol',
     sortOrder: searchParams.get('sortOrder') || 'DESC'
   });
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -481,55 +470,27 @@ export default function MarketPage() {
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-4">交易对</th>
-                  <th className="text-left p-4">交易所</th>
-                  <th className="text-right p-4">价格</th>
-                  <th className="text-right p-4">24h涨跌</th>
-                  <th className="text-right p-4">24h交易量</th>
-                  <th className="text-right p-4">24h最高</th>
-                  <th className="text-right p-4">24h最低</th>
+                  <th className="text-left p-4">基础货币</th>
+                  <th className="text-left p-4">报价货币</th>
+                  <th className="text-right p-4">最小名义价值</th>
                   <th className="text-center p-4">状态</th>
                   <th className="text-right p-4">更新时间</th>
                 </tr>
               </thead>
               <tbody>
                 {tradingPairs.map((pair) => (
-                  <tr key={`${pair.exchange}-${pair.symbol}`} className="border-b hover:bg-gray-50">
+                  <tr key={pair.symbol} className="border-b hover:bg-gray-50">
                     <td className="p-4">
-                      <div>
-                        <div className="font-semibold">{pair.symbol}</div>
-                        <div className="text-sm text-gray-600">
-                          {pair.base_asset}/{pair.quote_asset}
-                        </div>
-                      </div>
+                      <div className="font-semibold">{pair.symbol}</div>
                     </td>
                     <td className="p-4">
-                      <Badge className={`${getExchangeBadgeColor(pair.exchange)} text-white`}>
-                        {pair.exchange.toUpperCase()}
-                      </Badge>
+                      <div className="text-sm">{pair.baseCurrency}</div>
                     </td>
-                    <td className="p-4 text-right font-mono">
-                      {formatPrice(pair.price)}
-                    </td>
-                    <td className="p-4 text-right">
-                      <div className={`flex items-center justify-end ${
-                        pair.change_percent_24h >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {pair.change_percent_24h >= 0 ? (
-                          <TrendingUp className="h-4 w-4 mr-1" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4 mr-1" />
-                        )}
-                        {Math.abs(pair.change_percent_24h).toFixed(2)}%
-                      </div>
+                    <td className="p-4">
+                      <div className="text-sm">{pair.quoteCurrency}</div>
                     </td>
                     <td className="p-4 text-right font-mono text-sm">
-                      {formatNumber(pair.volume_24h)}
-                    </td>
-                    <td className="p-4 text-right font-mono text-sm">
-                      {formatPrice(pair.high_24h)}
-                    </td>
-                    <td className="p-4 text-right font-mono text-sm">
-                      {formatPrice(pair.low_24h)}
+                      {pair.minNotional.toFixed(8)}
                     </td>
                     <td className="p-4 text-center">
                       <span className={`text-sm ${getStatusColor(pair.status)}`}>
@@ -537,7 +498,7 @@ export default function MarketPage() {
                       </span>
                     </td>
                     <td className="p-4 text-right text-sm text-gray-600">
-                      {new Date(pair.last_updated).toLocaleTimeString()}
+                      {new Date(pair.lastUpdated).toLocaleTimeString()}
                     </td>
                   </tr>
                 ))}

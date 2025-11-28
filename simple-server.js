@@ -3,7 +3,7 @@ import cors from 'cors';
 import { Client } from 'pg';
 
 const app = express();
-const PORT = 3003;
+const PORT = 3004;
 
 app.use(cors());
 app.use(express.json());
@@ -31,22 +31,15 @@ app.get('/api/trading-pairs/trading-pairs', async (req, res) => {
 
     const result = await client.query(`
       SELECT 
-        id,
         symbol,
-        base_asset,
-        quote_asset,
-        exchange,
-        price,
-        volume_24h,
-        high_24h,
-        low_24h,
-        change_24h,
-        change_percent_24h,
+        base_asset as baseCurrency,
+        quote_asset as quoteCurrency,
         status,
-        updated_at as last_updated
+        min_notional as minNotional,
+        updated_at as lastUpdated
       FROM spot_pairs
       WHERE status = 'TRADING'
-      ORDER BY volume_24h DESC
+      ORDER BY symbol ASC
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
 

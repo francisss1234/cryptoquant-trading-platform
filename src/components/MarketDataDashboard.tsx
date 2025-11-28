@@ -48,6 +48,7 @@ export const MarketDataDashboard: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'chart' | 'indicators' | 'orderbook'>('overview');
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [currencyUpdateInfo, setCurrencyUpdateInfo] = useState<any>(null);
 
   // 自动刷新
   useEffect(() => {
@@ -61,11 +62,12 @@ export const MarketDataDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [autoRefresh, selectedExchange, selectedSymbol, fetchTicker, fetchOrderBook]);
 
-  // 初始加载
+  // 获取初始数据
   useEffect(() => {
     fetchTicker(selectedExchange, selectedSymbol);
     fetchKlineData(selectedExchange, selectedSymbol, selectedTimeframe);
     fetchOrderBook(selectedExchange, selectedSymbol);
+    fetchCurrencyUpdateInfo();
   }, [selectedExchange, selectedSymbol, selectedTimeframe]);
 
   const currentMarketData = marketData[selectedSymbol];
@@ -80,6 +82,26 @@ export const MarketDataDashboard: React.FC = () => {
 
   const handleSyncData = async () => {
     await syncHistoricalData(selectedExchange, selectedSymbol, selectedTimeframe);
+    await fetchCurrencyUpdateInfo(); // 同步后刷新币种信息
+  };
+
+  // 获取币种更新信息
+  const fetchCurrencyUpdateInfo = async () => {
+    try {
+      const response = await fetch('/api/currency-info/currency-update-info');
+      const result = await response.json();
+      
+      if (result.success) {
+        setCurrencyUpdateInfo({
+          totalPairs: result.data.totalPairs,
+          baseCurrencies: result.data.baseCurrencies,
+          quoteCurrencies: result.data.quoteCurrencies,
+          lastUpdate: result.data.lastUpdate
+        });
+      }
+    } catch (error) {
+      console.error('获取币种更新信息失败:', error);
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -182,6 +204,28 @@ export const MarketDataDashboard: React.FC = () => {
           </div>
           
           <div className="flex gap-2">
+            {/* 币种更新信息 */}
+            {currencyUpdateInfo && (
+              <div className="flex items-center space-x-2 text-sm bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                <div className="text-blue-700">
+                  <span className="font-medium">📊 币种更新:</span>
+                  <span className="ml-2">{currencyUpdateInfo.totalPairs} 交易对</span>
+                  <span className="mx-1">•</span>
+                  <span>{currencyUpdateInfo.baseCurrencies} 基础币种</span>
+                  <span className="mx-1">•</span>
+                  <span>{currencyUpdateInfo.quoteCurrencies} 计价币种</span>
+                  {currencyUpdateInfo.lastUpdate && (
+                    <>
+                      <span className="mx-2">|</span>
+                      <span className="text-blue-600 text-xs">
+                        更新: {new Date(parseInt(currencyUpdateInfo.lastUpdate)).toLocaleString()}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+            
             <button
               onClick={handleSyncData}
               disabled={isLoading}
